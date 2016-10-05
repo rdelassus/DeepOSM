@@ -21,6 +21,7 @@ fi
 export IMAGE_NAME=deeposm
 
 if "$1" = "true"; then
+  sh /home/andrew/.profile
   docker run $CUDA_SO $DEVICES \
                 -v `pwd`:/DeepOSM \
                  -w /DeepOSM \
@@ -28,7 +29,7 @@ if "$1" = "true"; then
                  -e C_INCLUDE_PATH=/usr/include/gdal \
                  -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
                  -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
-                 -it ${IMAGE_NAME} python bin/update_deeposmorg.py
+                 -t ${IMAGE_NAME} python bin/update_deeposmorg.py
 else
   docker run $CUDA_SO $DEVICES \
               -v `pwd`:/DeepOSM \
