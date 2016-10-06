@@ -5,7 +5,7 @@ import pickle
 import shutil
 
 # the name of the S3 bucket to post findings to
-FINDINGS_S3_BUCKET = 'deeposm'
+FINDINGS_S3_BUCKET = 'qucit.deeposm'
 
 # set in Dockerfile as env variable
 GEO_DATA_DIR = os.environ.get("GEO_DATA_DIR")
@@ -28,25 +28,31 @@ def cache_paths(raster_data_paths):
 
 def create_cache_directories():
     """Cache a list of naip image paths, to pass on to the train_neural_net script."""
-    shutil.rmtree(CACHE_PATH)
-    shutil.rmtree(RAW_LABEL_DATA_DIR)
+    try:
+        shutil.rmtree(CACHE_PATH)
+    except OSError as err:
+        pass  # oserror
+    try:
+        shutil.rmtree(RAW_LABEL_DATA_DIR)
+    except OSError as err:
+        pass  # oserror
     try:
         os.mkdir(CACHE_PATH)
-    except:
-        pass
+    except OSError as err:
+        pass  # oserror
     try:
         os.mkdir(LABELS_DATA_DIR)
-    except:
-        pass
+    except OSError as err:
+        pass  # oserror
     try:
         os.mkdir(LABEL_CACHE_DIRECTORY)
-    except:
-        pass
+    except OSError as err:
+        pass  # oserror
     try:
         os.mkdir(IMAGE_CACHE_DIRECTORY)
-    except:
-        pass
+    except OSError as err:
+        pass  # oserror
     try:
         os.mkdir(RAW_LABEL_DATA_DIR)
-    except:
-        pass
+    except OSError as err:
+        pass  # oserror
