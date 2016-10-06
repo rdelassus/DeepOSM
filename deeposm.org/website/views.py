@@ -9,7 +9,7 @@ import pickle
 from website import models, settings
 
 
-FINDINGS_S3_BUCKET = 'deeposm'
+FINDINGS_S3_BUCKET = 'qucit.deeposm'
 
 STATE_NAMES_TO_ABBREVS = {
     'delaware': 'de',
