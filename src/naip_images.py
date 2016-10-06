@@ -36,14 +36,14 @@ class NAIPDownloader:
                 path += token + '/'
                 try:
                     os.mkdir(path)
-                except:
-                    pass
+                except OSError as err:
+                    pass  # oserror
             return path
 
         try:
             os.mkdir(new_dir)
-        except:
-            pass
+        except OSError as err:
+            pass  # oserror
         return new_dir
 
     def download_naips(self):
@@ -64,7 +64,9 @@ class NAIPDownloader:
         filedata = f.read()
         f.close()
         access = os.environ.get("AWS_ACCESS_KEY_ID")
+        secret = os.environ.get("AWS_SECRET_ACCESS_KEY")
         newdata = filedata.replace("AWS_ACCESS_KEY", access)
+        newdata = newdata.replace("AWS_SECRET_KEY", secret)
         f = open(file_path, 'w')
         f.write(newdata)
         f.close()
@@ -74,19 +76,23 @@ class NAIPDownloader:
         # list the contents of the bucket directory
         bash_command = "s3cmd ls --recursive --skip-existing {} --requester-pays".format(
             self.url_base)
-        process = subprocess.Popen(bash_command.split(" "), stdout=subprocess.PIPE)
+        process = subprocess.Popen(
+            bash_command.split(" "), stdout=subprocess.PIPE)
         output = process.communicate()[0]
         naip_filenames = []
         for line in output.split('\n'):
             parts = line.split(self.url_base)
-            # there may be subdirectories for each state, where directories need to be made
+            # there may be subdirectories for each state, where directories need
+            # to be made
             if len(parts) == 2:
                 naip_path = parts[1]
                 naip_filenames.append(naip_path)
-                naip_subpath = os.path.join(NAIP_DATA_DIR, naip_path.split('/')[0])
+                naip_subpath = os.path.join(
+                    NAIP_DATA_DIR, naip_path.split('/')[0])
                 if not os.path.exists(naip_subpath):
                     os.mkdir(naip_subpath)
-                labels_subpath = os.path.join(LABELS_DATA_DIR, naip_path.split('/')[0])
+                labels_subpath = os.path.join(
+                    LABELS_DATA_DIR, naip_path.split('/')[0])
                 if not os.path.exists(labels_subpath):
                     os.mkdir(labels_subpath)
             else:
