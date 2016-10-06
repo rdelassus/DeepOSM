@@ -137,15 +137,17 @@ def cache_findings():
         local_path = 'website/static/' + obj.key
         try:
             os.mkdir('website/static/' + obj.key.split('/')[0])
-        except:
-            pass
+        except OSError as err:
+            pass  # oserror
+
         if True or not os.path.exists(local_path):
             try:
                 s3_client = boto3.client('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                                          aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
                 s3_client.download_file(FINDINGS_S3_BUCKET, obj.key, local_path)
             except:
-                # catch 'Not a directory: 'website/static/ia/.AbB78a64' -> 'website/static/ia/'
+                # catch 'Not a directory: 'website/static/ia/.AbB78a64' ->
+                # 'website/static/ia/'
                 continue
             with open(local_path, 'rb') as infile:
                 errors = pickle.load(infile)
@@ -157,14 +159,18 @@ def cache_findings():
                 updated_error = False
                 try:
                     map_error = models.MapError.objects.get(raster_filename=filename,
-                                                            raster_tile_x=e['raster_tile_x'],
-                                                            raster_tile_y=e['raster_tile_y'],
+                                                            raster_tile_x=e[
+                                                                'raster_tile_x'],
+                                                            raster_tile_y=e[
+                                                                'raster_tile_y'],
                                                             )
                     updated_error = True
                 except:
                     map_error = models.MapError(raster_filename=filename,
-                                                raster_tile_x=e['raster_tile_x'],
-                                                raster_tile_y=e['raster_tile_y'],
+                                                raster_tile_x=e[
+                                                    'raster_tile_x'],
+                                                raster_tile_y=e[
+                                                    'raster_tile_y'],
                                                 state_abbrev=e['state_abbrev'],
                                                 # country_abbrev='USA',
                                                 ne_lat=e['ne_lat'],

@@ -30,19 +30,22 @@ def post_findings_to_s3(raster_data_paths, model, training_info, bands, render_r
 
         # combine findings for all NAIP images analyzedfor the region
         [findings.append(f) for f in tag_with_locations(fp_images, false_positives,
-                                                        training_info['tile_size'],
+                                                        training_info[
+                                                            'tile_size'],
                                                         training_info['naip_state'])]
 
     # dump combined findings to disk as a pickle
     try:
         os.mkdir(CACHE_PATH + training_info['naip_state'])
-    except:
-        pass
-    naip_path_in_cache_dir = training_info['naip_state'] + '/' + 'findings.pickle'
+    except OSError as err:
+        pass  # oserror
+    naip_path_in_cache_dir = training_info[
+        'naip_state'] + '/' + 'findings.pickle'
     local_path = CACHE_PATH + naip_path_in_cache_dir
     with open(local_path, 'w') as outfile:
         pickle.dump(findings, outfile)
 
     # push pickle to S3
     s3_client = boto3.client('s3')
-    s3_client.upload_file(local_path, FINDINGS_S3_BUCKET, naip_path_in_cache_dir)
+    s3_client.upload_file(local_path, FINDINGS_S3_BUCKET,
+                          naip_path_in_cache_dir)
